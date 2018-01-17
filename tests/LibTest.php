@@ -1,8 +1,8 @@
 <?php
 
-namespace League\Skeleton;
+namespace Multipass\Lib;
 
-class ExampleTest extends \PHPUnit\Framework\TestCase
+class LibTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that true does in fact equal true

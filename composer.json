@@ -1,36 +1,34 @@
 {
-    "name": ":vendor/:package_name",
+    "name": "mltpss/lib",
     "type": "library",
-    "description": ":package_description",
-    "keywords": [
-        ":vendor",
-        ":package_name"
-    ],
-    "homepage": "https://github.com/:vendor/:package_name",
-    "license": "MIT",
+    "description": "The Multipass SDKs library.",
+    "keywords": ["mltpss", "multipass", "sqweb", "library", "core"],
+    "homepage": "https://www.multipass.net",
+    "license": "GPL-3.0",
     "authors": [
         {
-            "name": ":author_name",
-            "email": ":author_email",
-            "homepage": ":author_website",
+            "name": "Matthieu Borde",
+            "email": "matthieu@sqweb.com",
             "role": "Developer"
         }
     ],
     "require": {
-        "php" : "~5.6|~7.0"
+        "php": "~5.6|~7.0",
+        "airmanbzh/php-html-generator": "^1.0"
     },
     "require-dev": {
-        "phpunit/phpunit" : ">=5.4.3",
+        "phpunit/phpunit": ">=5.4.3",
+        "psy/psysh": "@stable",
         "squizlabs/php_codesniffer": "^2.3"
     },
     "autoload": {
         "psr-4": {
-            ":vendor\\:package_name\\": "src"
+            "Multipass\\Core\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            ":vendor\\:package_name\\": "tests"
+            "Multipass\\Core\\Tests\\": "tests"
         }
     },
     "scripts": {
