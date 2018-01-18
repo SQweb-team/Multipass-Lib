@@ -1,8 +1,76 @@
 {
     "en_US": {
+        "common": {
+            "login": "Sign in",
+            "already_sub": "Already a member? ",
+            "desc": "The multisite subscription, with no commitment.",
+            "href": "https://www.multipass.net/en/premium-partners-website-without-ads-nor-restriction",
+            "discover": "Discover all the partners"
+        },
+        "support": {
+            "warning": "Surf our website ad free.",
+            "unlock": "Support our website, get your "
+        },
+        "locking": {
+            "warning": "The rest of this article is restricted.",
+            "unlock": "Unlock this content, get your "
+        },
+        "end_of_article": {
+            "title": "Continue reading...",
+            "sentence_1": "'... we need you to hear this: more people are reading our website than ever but advertising revenues across the media are falling fast.",
+            "sentence_2": " We want to keep our content as open as we can. We are independent, and our quality work takes a lot of time, money and hard work to produce. ",
+            "sentence_3": "You can support us with Multipass which enables you to pay for a bundle of websites: you can finance the work of journalists and content creators you love.",
+            "support": "Soutenez nous avec"
+        }
     },
+
     "en_GB": {
+        "common": {
+            "login": "Sign in",
+            "already_sub": "Already a member? ",
+            "desc": "The multisite subscription, with no commitment.",
+            "href": "https://www.multipass.net/en/premium-partners-website-without-ads-nor-restriction",
+            "discover": "Discover all the partners"
+        },
+        "support": {
+            "warning": "Surf our website ad free.",
+            "unlock": "Support our website, get your "
+        },
+        "locking": {
+            "warning": "The rest of this article is restricted.",
+            "unlock": "Unlock this content, get your "
+        },
+        "end_of_article": {
+            "title": "Continue reading...",
+            "sentence_1": "'... we need you to hear this: more people are reading our website than ever but advertising revenues across the media are falling fast.",
+            "sentence_2": " We want to keep our content as open as we can. We are independent, and our quality work takes a lot of time, money and hard work to produce. ",
+            "sentence_3": "You can support us with Multipass which enables you to pay for a bundle of websites: you can finance the work of journalists and content creators you love.",
+            "support": "Soutenez nous avec"
+        }
     },
+
     "fr_FR": {
+        "common": {
+            "login": "Connexion",
+            "already_sub": "Déjà abonné ? ",
+            "desc": "L'abonnement multi-sites, sans engagement.",
+            "href": "https://www.multipass.net/fr/sites-partenaires-premium-sans-pub-ni-limites",
+            "discover": "Découvrir les partenaires"
+        },
+        "support": {
+            "warning": "Surfez sans publicité.",
+            "unlock": "Soutenez notre site grâce à "
+        },
+        "locking": {
+            "warning": "Cet article est reservé.",
+            "unlock": "Débloquez ce contenu avec "
+        },
+        "end_of_article": {
+            "title": "L\"article est terminé ...",
+            "sentence_1": "... mais nous avons besoin que vous lisiez ceci: nous avons de plus en plus de lecteurs chaque jour, mais de moins en moins de revenus publicitaires.",
+            "sentence_2": "Nous souhaitons laisser notre contenu accessible à tous. Nous sommes indépendants et notre travail de qualité prend beaucoup de temps, d'argent et de dévotion.",
+            "sentence_3": "Vous pouvez nous soutenir avec Multipass qui permet de payer pour un bouquet de sites, et ainsi financer le travail des créateurs et journalistes que vous aimez.",
+            "support": "Soutenez nous avec"
+        }
     }
 }

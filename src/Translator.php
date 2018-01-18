@@ -5,19 +5,31 @@ namespace Multipass\Core;
 class Translator
 {
     /**
-     *  @var The translation object
+     *  @var stdClass Object The translation object
      */
     private $translations;
 
     /**
+     *  @var array The locales supported by the translation file
+     */
+    private $supported = [
+        'en_US',
+        'en_GB',
+        'fr_FR',
+    ];
+
+    /**
      *  Creates a new Translator instance.
      *
-     *  @param string $locale
+     *  @param string $locale The locale
+     *  @param string @file The location of the translation file
      */
-    public function __construct($locale = null)
+    public function __construct($locale = null, $file = null)
     {
-        $locale = $locale ?: 'en_US';
-        $this->translations = json_decode(file_get_contents(__DIR__ . '/../config/translator/lang.json'))->{$locale};
+        $locale = !$locale || in_array($locale, $this->supported) ? $locale : 'en_US';
+        $file = $file ?: __DIR__ . '/../config/translator/lang.json';
+
+        $this->translations = json_decode(file_get_contents($file))->{$locale};
     }
 
     /**
@@ -50,7 +62,7 @@ class Translator
      *  @param stdClass Object $obj The object to check
      *  @param array $props The properties to check in the object
      *  @param int $level The recursion level
-     *  @return string on success OR int on failure 
+     *  @return string on success OR int on failure
      */
     private function checkProperties($obj, $props, $level = 0)
     {
