@@ -5,12 +5,12 @@ namespace Multipass\Core;
 class Translator
 {
     /**
-     *  @var stdClass Object The translation object
+     *  @var    stdClass Object The translation object
      */
     private $translations;
 
     /**
-     *  @var array The locales supported by the translation file
+     *  @var    array   The locales supported by the translation file
      */
     private $supported = [
         'en_US',
@@ -21,12 +21,12 @@ class Translator
     /**
      *  Creates a new Translator instance.
      *
-     *  @param string $locale The locale
-     *  @param string @file The location of the translation file
+     *  @param  string  $locale The locale
+     *  @param  string  $file   The location of the translation file
      */
     public function __construct($locale = null, $file = null)
     {
-        $locale = !$locale || in_array($locale, $this->supported) ? $locale : 'en_US';
+        $locale = $locale && in_array($locale, $this->supported) ? $locale : 'en_US';
         $file = $file ?: __DIR__ . '/../config/translator/lang.json';
 
         $this->translations = json_decode(file_get_contents($file))->{$locale};
@@ -35,8 +35,7 @@ class Translator
     /**
      *  Retrieves a localized string from the available translations.
      *
-     *  @param string $path The path identifier to retrieve the localized string
-     *  from. This string should follow the dot notation.
+     *  @param  string  $path   The path identifier to retrieve the localized string from. This string should follow the dot notation.
      *  @return string
      */
     public function get($path)
@@ -49,7 +48,7 @@ class Translator
         $check = $this->checkProperties($this->translations, $props);
 
         if (is_int($check)) {
-            throw new \Exception("Path identifier is unkown or not a string: `$props[$check]` in `$path`");
+            throw new \Exception("Path identifier is unkown or not a string: '$props[$check]' in '$path'");
         }
 
         return $check;
@@ -59,10 +58,10 @@ class Translator
      *  Checks if the provided path is correct when fetching a localized string,
      *  and if a matching string can be found.
      *
-     *  @param stdClass Object $obj The object to check
-     *  @param array $props The properties to check in the object
-     *  @param int $level The recursion level
-     *  @return string on success OR int on failure
+     *  @param  stdClass    $obj The object to check
+     *  @param  array       $props The properties to check in the object
+     *  @param  int         $level The recursion level
+     *  @return mixed
      */
     private function checkProperties($obj, $props, $level = 0)
     {

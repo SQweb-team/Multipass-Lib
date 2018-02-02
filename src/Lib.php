@@ -2,17 +2,19 @@
 
 namespace Multipass\Core;
 
+use Carbon\Carbon;
 use HtmlGenerator\HtmlTag as Html;
 
 class Lib
 {
     /**
-     *  Generates HTML to output the script based on user configuration.
+     * Generates HTML to output the script based on user configuration.
      *
-     *  @param array $config User settings
-     *  @return string
+     * @param   array   $config     User settings
+     * @param   string  $version    The related SDK version
+     * @return  string
      */
-    public static function generateScript($config)
+    public static function generateScript($config, $version)
     {
         $cdn = 'https://cdn.multipass.net/mltpss.min.js';
 
@@ -46,17 +48,17 @@ class Lib
             ->set('type', 'text/javascript');
         $tag2 = Html::createElement('script')
             ->set('type', 'text/javascript')
-            ->text($settings);
+            ->text("/* $version */ var mltpss = new Multipass.default($settings)");
 
         return $tag . PHP_EOL . $tag2;
     }
 
     /**
-     *  Generates HTML to output an article lock.
+     * Generates HTML to output an article lock.
      *
-     *  @param string $locale
-     *  @param sting $type Type of lock ('locking' or 'support')
-     *  @return HtmlTag instance
+     * @param   string  $locale
+     * @param   sting   $type   Type of lock ('locking' or 'support')
+     * @return  \HtmlGenerator\HtmlTag
      */
     public static function generateArticleLock($locale, $type = 'locking')
     {
@@ -66,7 +68,7 @@ class Lib
         $html = Html::createElement('div')
             ->addClass('footer__mp__normalize')
             ->addClass('footer__mp__button_container')
-            ->addClass('sqw-paywall-button-container'); 
+            ->addClass('sqw-paywall-button-container');
         $header = $html->addElement('div')->addClass('footer__mp__button_header');
         $body = $html->addElement('div')
             ->addClass('footer__mp__normalize')
@@ -82,7 +84,7 @@ class Lib
         $header->addElement('div')
             ->addClass('footer__mp__button_signin')
             ->set('onclick', 'mltpss.modal_first(event)')
-            ->text($tr->get('common.already_sub'))
+            ->text($tr->get('common.already_sub') . ' ')
             ->addElement('span')
             ->addClass('footer__mp__button_login')
             ->addClass('footer__mp__button_strong')
@@ -108,10 +110,10 @@ class Lib
     }
 
     /**
-     *  Generates HTML to output an End-of-Article block.
+     * Generates HTML to output an End-of-Article block.
      *
-     *  @param string $locale
-     *  @return HtmlTag instance
+     * @param   string  $locale
+     * @return  \HtmlGenerator\HtmlTag
      */
     public static function generateEndOfArticle($locale)
     {
@@ -146,10 +148,10 @@ class Lib
     }
 
     /**
-     *  Generates HTML to output a Multipass button.
+     * Generates HTML to output a Multipass button.
      *
-     *  @param string $size
-     *  @return HtmlTag instance
+     * @param   string  $size
+     * @return  \HtmlGenerator\HtmlTag
      */
     public static function generateButton($size)
     {
@@ -170,14 +172,14 @@ class Lib
     }
 
     /**
-     *  Cuts a string based on a percentage, and applies HTML tags to
-     *  give a fading effect.
+     * Cuts a string based on a percentage, and applies HTML tags to
+     * give a fade-out effect.
      *
-     *  @param string $text The string to manipulate
-     *  @param string $percentage The percentage of text to display
-     *  @return string
+     * @param   string  $text       The string to manipulate
+     * @param   string  $percentage The percentage of text to display
+     * @return  string
      */
-    public static function generateFadingText($text, $percentage = 50)
+    public static function generateFadeOutText($text, $percentage)
     {
         $words = preg_split('/(<.+?><\/.+?>)|(<.+?>)|( )/', $text, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 
@@ -189,35 +191,100 @@ class Lib
         $count = ceil(count($words) / 100 * $percentage);
         $alpha = 1;
         $lambda = (1 / $count);
-        $gen = [];
+        $tags = [];
 
         for ($i = 0; $i < $count; $i++) {
             if (!preg_match('/<.+?>/', $words[$i])) {
                 $opacity = number_format($alpha, 2);
-                $gen[] = "<span style=\"opacity:$opacity\">$words[$i]</span>";
+                $tags[] = "<span style=\"opacity:$opacity\">$words[$i]</span>";
                 $alpha -= $lambda;
             } else {
-                $gen[] = $words[$i];
+                $tags[] = $words[$i];
                 $count++;
             }
         }
 
-        print_r($gen);
-
-        return implode(' ', $gen);
+        return (new self)->closeTags(implode(' ', $tags));
     }
 
     /**
-     *  Queries the Multipass API for an user subscription status.
-     *  
-     *  @param string $api_token The user token
-     *  @param int $website_id The website ID
-     *  @param string $user_agent The SDK user agent
-     *  @return int
+     * Get user subscription status.
+     *
+     * @param   string  $api_token  The user token
+     * @param   int     $website_id The website ID
+     * @param   string  $user_agent The SDK user agent
+     * @return  int
      */
     public static function getUserCredits($api_token, $website_id, $user_agent)
     {
+        $response = (new self)->apiCall($api_token, $website_id, $user_agent);
+
+        return $response ? $response->credit : 0;
+    }
+
+    /**
+     * Determines whether a date is greater than or equal to now.
+     *
+     * @param   string  $origin The date to compare. Format must be ISO (YYYY-MM-DD).
+     * @param   int     $delay  A number of days to add to the original date.
+     * @return  bool
+     */
+    public static function isDateGreaterThanNow($origin, $delay)
+    {
+        $date = Carbon::createFromFormat('Y-m-d', $origin)
+            ->addDay($delay);
+
+        return Carbon::now()->gte($date);
+    }
+
+    /**
+     * Determines whether a URI should be limited.
+     *
+     * @param   int     $limit  The number of maximum URIs.
+     * @return  bool
+     */
+    public static function isUriLimited($limit)
+    {
+        $uri = $_SERVER['REQUEST_URI'];
+
+        if (!isset($_COOKIE['sqwBlob'])) {
+            $expires_at = time() + 24 * 60 * 60;
+            $cookie = [
+                [$uri],
+                $expires_at
+            ];
+
+            (new self)->makeCookie('sqwBlob', serialize($cookie), $expires_at);
+
+            return true;
+        }
+
+        $cookie = unserialize($_COOKIE['sqwBlob']);
+
+        if (!in_array($uri, $cookie[0])) {
+            if (count($cookie[0]) > $limit - 1) {
+                return false;
+            }
+
+            $cookie[0][] = $uri;
+            (new self)->makeCookie('sqwBlob', serialize($cookie), $cookie[1]);
+        }
+
+        return true;
+    }
+
+    /**
+     * Queries the Multipass API.
+     *
+     * @param   string  $api_token  The user token
+     * @param   int     $website_id The website ID
+     * @param   string  $user_agent The SDK user agent
+     * @return  int
+     */
+    private function apiCall($api_token, $website_id, $user_agent)
+    {
         $ch = curl_init();
+
         curl_setopt_array($ch, [
             CURLOPT_URL => 'https://api.multipass.net/token/check',
             CURLOPT_RETURNTRANSFER => true,
@@ -237,6 +304,46 @@ class Lib
         }
 
         curl_close($ch);
-        return $response->credit;
+
+        if ($response->status !== true) {
+            throw new \Exception('There was a problem while querying the Multipass API, please try again later.');
+        }
+
+        return $response;
+    }
+
+    /**
+     * Closes unclosed tags in an html string.
+     *
+     * @param   string  $html   The html string to manipulate
+     * @return  string
+     */
+    private function closeTags($html)
+    {
+        $dom = new \DOMDocument;
+        $dom->loadHTML($html);
+        $mock = new \DOMDocument;
+        $body = $dom->getElementsByTagName('body')->item(0);
+
+        foreach ($body->childNodes as $child) {
+            $mock->appendChild($mock->importNode($child, true));
+        }
+
+        $fixed = trim($mock->saveHTML());
+
+        return $fixed;
+    }
+
+    /**
+     * Create a cookie with some defaults.
+     *
+     * @param   string  $name   The name of the cookie
+     * @param   string  $value  The value of the cookie
+     * @param   int     $life   A Unix timestamp representing the time the cookie expires
+     * @return  null
+     */
+    private function makeCookie($name, $value, $life)
+    {
+        setcookie($name, $value, $life, '', '', isset($_SERVER['HTTPS']), true);
     }
 }
